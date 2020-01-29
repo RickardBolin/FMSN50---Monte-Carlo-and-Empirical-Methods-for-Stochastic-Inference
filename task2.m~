@@ -4,7 +4,7 @@ clc
 load powercurve_V112.mat
 
 lambda = [10.6 9.7 9.2 8.0 7.8 8.1 7.8 8.1 9.1 9.9 10.6 10.6];
-k =      [2.0  2.0 2.0 1.9 1.9 1.9 1.9 1.9 2.0 1.9 2.0  2.0];
+k =      [2.0 2.0 2.0 1.9 1.9 1.9 1.9 1.9 2.0 1.9 2.0 2.0];
 
 avgLambda = mean(lambda);
 avgK = mean(k);
@@ -18,12 +18,15 @@ figure
 plot(t, weibulDist)
 figure
 plot(t, P(t))
-
-for(month =)
-randomWeibuls = wblrnd(lambda(1), k(1), 10, 1);
-y = P(randomWeibuls);
+powers = zeros(1000,12);
+means
+for i = 1:12
+    randomWeibuls = wblrnd(lambda(i), k(i), 1000, 1);
+    powers(i) = P(randomWeibuls);
+    means(i) = mean(power);
+    variances(i) = var(power);
+end
 figure
-scatter(randomWeibuls, y)
-
-mean(y)
-var(y)
+scatter(1:12, means)
+figure
+scatter(1:12, variances)
