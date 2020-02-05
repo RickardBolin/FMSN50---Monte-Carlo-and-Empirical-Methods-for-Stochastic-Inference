@@ -19,8 +19,8 @@ x = 0:0.1:40;
 
 
 
-%  Tror vi missat grejer här! Vi måste väl ha med 0-3 och >25 också på
-%  något sätt?
+%  Tror vi missat grejer h?r! Vi m?ste v?l ha med 0-3 och >25 ocks? p?
+%  n?got s?tt?
 
 
 
@@ -56,8 +56,8 @@ width = abs(confIntervals(1,:)-confIntervals(2,:));
 figure
 scatter(1:12, width)
 
-% Konfidensintervallet minskar när samples ökar. Kanske rimligt, men bara
-% till en viss gräns antar jag?
+% Konfidensintervallet minskar n?r samples ?kar. Kanske rimligt, men bara
+% till en viss gr?ns antar jag?
 
 %%
 
@@ -72,7 +72,7 @@ stds = zeros(1,12);
 
 for i = 1:12
     f = @(x) wblpdf(x,lambda(i),k(i));
-    c = integral(f, a, b);
+    c = wblcdf(b, lambda(i), k(i)) - wblcdf(a, lambda(i), k(i)); %integral(f, a, b);
     Finv = @(x) wblinv(x, lambda(i), k(i));
     FCondInv = @(x) Finv(x*c + f(a));  
     %plot(x, FCondInv(x))    
@@ -82,7 +82,7 @@ for i = 1:12
 end
 
 figure
-scatter(sort(FCondInv(U)), powers(:,1))  %Kolla denna, skumt att vindarna bara går till typ 20? Borde väl gå till 25?
+scatter(sort(FCondInv(U)), powers(:,1))  %Kolla denna, skumt att vindarna bara g?r till typ 20? Borde v?l g? till 25?
 figure
 scatter(1:12, means)
 figure
@@ -114,7 +114,7 @@ means = zeros(1,12);
 stds = zeros(1,12);
 
 for i = 1:12
-    powers(:,i) = P(normNbrs).*wblpdf(normNbrs, lambda(i), k(i))./normpdf(normNbrs,(b-a)/2, 3); % Divide by value at x in normal dist.
+    powers(:,i) = P(normNbrs).*wblpdf(normNbrs, lambda(i), k(i))./normpdf(normNbrs,(b-a)/2, 3); x% Divide by value at x in normal dist.
 end
 
 means = mean(powers);
@@ -127,7 +127,7 @@ scatter(1:12, stds)
 %%
 
 
-%Lägg in antithetic sampling här!
+%L?gg in antithetic sampling h?r!
 
 
 
@@ -211,4 +211,33 @@ zlabel('Probability Density')
 
 newP = @(x1,x2) P(x1).*fcomb(x1,x2);
 surf(x1,x2,newP(x1,x2))
+
+
+
+
+%%
+
+a = 3;
+b = 25;
+N = 1000000;
+U = rand(1,N/2);
+Uinv = 1 - U;
+
+powers = zeros(N,12);
+means = zeros(1,12);
+stds = zeros(1,12);
+
+for i = 1:12
+    f = @(x) wblpdf(x,lambda(i),k(i));
+    c = integral(f, a, b);
+    Finv = @(x) wblinv(x, lambda(i), k(i));
+    FCondInv = @(x) Finv(x*c + f(a));  
+    %plot(x, FCondInv(x))    
+    powers(1:N/2,i) = P(sort(Finv(U)));
+    powers(N/2 + 1:end, i) = P(sort(Finv(Uinv)));
+    means(i) = mean(powers(:,i));
+    stds(i) = std(powers(:,i));
+end
+
+
 
