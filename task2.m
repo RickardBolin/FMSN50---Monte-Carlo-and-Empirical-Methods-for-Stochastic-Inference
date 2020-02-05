@@ -16,14 +16,6 @@ x = 0:0.1:40;
 
 %%
 
-
-
-
-%  Tror vi missat grejer h?r! Vi m?ste v?l ha med 0-3 och >25 ocks? p?
-%  n?got s?tt?
-
-
-
 weibulDist = wblpdf(x,lambda(1),k(1));
 
 figure
@@ -35,7 +27,7 @@ powers = zeros(N,12);
 means = zeros(1,12);
 stds = zeros(1,12);
 for i = 1:12
-    randomWeibuls = sort(wblrnd(lambda(i), k(i), N, 1)); % Sorting to get a nice plot
+    randomWeibuls = wblrnd(lambda(i), k(i), N, 1);
     powers(:,i) = P(randomWeibuls);
     means(i) = mean(powers(:,i));
     stds(i) = std(powers(:,i));
@@ -86,6 +78,7 @@ figure
 scatter(1:12, stds)
 
 %% 
+% Importance sampling: 
 
 clc
 close all
@@ -93,9 +86,6 @@ lambda = [10.6 9.7 9.2 8.0 7.8 8.1 7.8 8.1 9.1 9.9 10.6 10.6];
 k = [2.0 2.0 2.0 1.9 1.9 1.9 1.9 1.9 2.0 1.9 2.0 2.0];
 a = 3;
 b = 25;
-% Importance sampling: 
-% http://www.inferencelab.com/importance-sampling-matlab-demo/
-
 %x = 0:0.1:40;
 %figure
 %plot(x, wblpdf(x,lambda(1),k(1))/(b-a))
@@ -156,3 +146,32 @@ mean(means)/(3.075*10^6)
 avg_integral
 
 
+%%
+
+rho = 1.225;
+d = 112;
+Ptot = @(v) ((rho*pi*(d.^2).*(v.^3))/8).*wblpdf(v,lambda(1), k(1));
+expectedTot = integral(Ptot, 0, 100); %100 ger nästan samma svar som inf
+
+N = 1000000;
+powers = zeros(N,12);
+means = zeros(1,12);
+
+for i = 1:12
+    randomWeibuls = wblrnd(lambda(i), k(i), N, 1);
+    powers(:,i) = P(randomWeibuls);
+    means(i) = mean(powers(:,i));
+end
+
+[sortedPowers,I] = sort(powers(:,12));
+
+avgPowerCoeff = mean(means)/expectedTot;
+
+%%
+capacities = zeros(1,12);
+for i = 1:12
+    capacities(i) = means(i)/3.075e6;
+end
+figure
+scatter(1:12, capacities(1:12))
+mean(capacities)
