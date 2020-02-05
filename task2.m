@@ -71,18 +71,15 @@ means = zeros(1,12);
 stds = zeros(1,12);
 
 for i = 1:12
-    f = @(x) wblpdf(x,lambda(i),k(i));
-    c = wblcdf(b, lambda(i), k(i)) - wblcdf(a, lambda(i), k(i)); %integral(f, a, b);
+    F = @(x) wblcdf(x,lambda(i),k(i));
+    c = F(b) - F(a); %integral(f, a, b);
     Finv = @(x) wblinv(x, lambda(i), k(i));
-    FCondInv = @(x) Finv(x*c + f(a));  
-    %plot(x, FCondInv(x))    
-    powers(:,i) = P(sort(FCondInv(U)));
+    FCondInv = @(x) Finv(x*c + F(a));  
+    powers(:,i) = P(FCondInv(U));
     means(i) = mean(powers(:,i));
     stds(i) = std(powers(:,i));
 end
 
-figure
-scatter(sort(FCondInv(U)), powers(:,1))  %Kolla denna, skumt att vindarna bara g?r till typ 20? Borde v?l g? till 25?
 figure
 scatter(1:12, means)
 figure
@@ -114,7 +111,7 @@ means = zeros(1,12);
 stds = zeros(1,12);
 
 for i = 1:12
-    powers(:,i) = P(normNbrs).*wblpdf(normNbrs, lambda(i), k(i))./normpdf(normNbrs,(b-a)/2, 3); x% Divide by value at x in normal dist.
+    powers(:,i) = P(normNbrs).*wblpdf(normNbrs, lambda(i), k(i))./normpdf(normNbrs,(b-a)/2, 3); % Divide by value at x in normal dist.
 end
 
 means = mean(powers);
@@ -124,32 +121,31 @@ scatter(1:12, means)
 figure
 scatter(1:12, stds)
 
-%%
-
-
-%L?gg in antithetic sampling h?r!
-
-
 
 
 %%
-N = 1000000;
+close all
 a = 3;
 b = 25;
+N = 1000000;
+U = rand(1,N/2);
+Uinv = 1 - U;
 
-box_height = 0.1;
-box_width = b-a;
-x = a + (b-a)*sort(rand(1,N),1,'descend');
-y = box_height*sort(rand(1,N),1,'descend');
-integral_sum = 0;
+powers = zeros(N/2,12);
+means = zeros(1,12);
+stds = zeros(1,12);
+
 for i = 1:12
-    weibulDist = @(x) wblpdf(x,lambda(i),k(i));
-    bool = y < weibulDist(x);
-    area = sum(bool)/N;
-    integral_approx = area*box_width*box_height;
-    integral_sum = integral_sum + integral_approx;
+    Finv = @(x) wblinv(x, lambda(i), k(i));
+    powers(:,i) = (P(Finv(U)) +  P(Finv(Uinv)))/2;
+    means(i) = mean(powers(:,i));
+    stds(i) = std(powers(:,i));
 end
-avg_integral = integral_sum/12;
+
+figure
+scatter(1:12, means)
+figure
+scatter(1:12, stds)
 
 %%
 
@@ -158,35 +154,5 @@ mean(means)/(3.075*10^6)
 
 %Availability?
 avg_integral
-
-%%
-
-
-
-
-%%
-
-a = 3;
-b = 25;
-N = 1000000;
-U = rand(1,N/2);
-Uinv = 1 - U;
-
-powers = zeros(N,12);
-means = zeros(1,12);
-stds = zeros(1,12);
-
-for i = 1:12
-    f = @(x) wblpdf(x,lambda(i),k(i));
-    c = integral(f, a, b);
-    Finv = @(x) wblinv(x, lambda(i), k(i));
-    FCondInv = @(x) Finv(x*c + f(a));  
-    %plot(x, FCondInv(x))    
-    powers(1:N/2,i) = P(sort(Finv(U)));
-    powers(N/2 + 1:end, i) = P(sort(Finv(Uinv)));
-    means(i) = mean(powers(:,i));
-    stds(i) = std(powers(:,i));
-end
-
 
 
