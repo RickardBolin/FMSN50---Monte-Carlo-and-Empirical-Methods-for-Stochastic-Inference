@@ -60,6 +60,7 @@ Z = fcmb.*z;
 surf(x1,x2,Z)
 
 %%
+% Importance sampling on the 2D power function newP
 mu = [1 1]*(b-a)/2;
 sigma = eye(2)*30;
 
@@ -68,15 +69,20 @@ N = 1000000;
 normNbrs = mvnrnd(mu, sigma, N);
 g = mvnpdf(normNbrs,mu,sigma);
 
+power = newP(normNbrs(:,1), normNbrs(:,2))./g; % Divide by value at x in normal dist.
 
-power = newP(normNbrs(:,1), normNbrs(:,2)).*fcomb(normNbrs(:,1), normNbrs(:,2))./g; % Divide by value at x in normal dist.
+Pmean = mean(power);
+Pstd = std(power);
 
+%%
 
-PmeanP = mean(powers);
-stdP = std(powers);
-figure
-scatter(1:12, means)
-figure
-scatter(1:12, stds)
+% Importance sampling on the 2D power function newP
+
+N = 1000000;
+
+normNbrs = mvnrnd(mu, sigma, N);
+pofv1 = P(normNbrs(1,:));
+pofv2 = P(normNbrs(2,:));
+cov(pofv1, pofv2) %Negative correlation?
 
 

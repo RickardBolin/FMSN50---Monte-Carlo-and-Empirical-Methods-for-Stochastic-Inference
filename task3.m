@@ -60,10 +60,11 @@ Z = fcmb.*z;
 surf(x1,x2,Z)
 
 %%
+% Importance sampling on the 2D power function newP
 mu = [1 1]*(b-a)/2;
 sigma = eye(2)*30;
 
-N = 10000000;
+N = 1000000;
 
 normNbrs = mvnrnd(mu, sigma, N);
 g = mvnpdf(normNbrs,mu,sigma);
@@ -75,4 +76,15 @@ Pstd = std(power);
 
 %%
 
+N = 1000000;
 
+normNbrs = mvnrnd(mu, sigma, N);
+pofv1 = P(normNbrs(:,1));
+pofv2 = P(normNbrs(:,2));
+cov(pofv1, pofv2)
+
+%%
+var(pofv1+pofv2)
+std(pofv1+pofv2)
+
+%%
