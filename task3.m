@@ -29,6 +29,8 @@ z = fcomb(V1, V2);
 
 surf(v1,v2,z)
 %%
+b = 25;
+a = 3;
 mu = [1 1]*(b-a)/2;
 sigma = eye(2)*30;
 
@@ -79,8 +81,10 @@ Pstd = std(power);
 N = 1000000;
 
 normNbrs = mvnrnd(mu, sigma, N);
-pofv1 = P(normNbrs(:,1));
-pofv2 = P(normNbrs(:,2));
+g = mvnpdf(normNbrs,mu,sigma);
+
+pofv1 = P(normNbrs(:,1)).*fcomb(normNbrs(:,1), normNbrs(:,2))./g;
+pofv2 = P(normNbrs(:,2)).*fcomb(normNbrs(:,1), normNbrs(:,2))./g;
 cov(pofv1, pofv2)
 
 %%
@@ -88,3 +92,7 @@ var(pofv1+pofv2)
 std(pofv1+pofv2)
 
 %%
+pi1 = sum(pofv1 + pofv2 > 3.075e6)/N;
+pi2 = sum(pofv1 + pofv2 < 3.075e6)/N;
+interval = sqrt(pi1*(1 - pi1)/N);
+[pi1-1.96*interval, pi1+1.96*interval]
