@@ -194,22 +194,25 @@ legend([m1 s1 s2 s3 s4],{'Mean','Standard','Truncated','Importance Sampling','An
 
 rho = 1.225;
 d = 112;
-Ptot = @(v) ((rho*pi*(d.^2).*(v.^3))/8).*wblpdf(v,lambda(1), k(1));
-expectedTot = integral(Ptot, 0, 100); %100 ger n?stan samma svar som inf
-
-N = 1000000;
+avgPtot = 0;
 powers = zeros(N,12);
 means = zeros(1,12);
 
 for i = 1:12
+    Ptot = @(v) ((rho*pi*(d.^2).*(v.^3))/8).*wblpdf(v,lambda(i), k(i));
+    pow = integral(Ptot, 0, 100); %100 gives about the same answer as infty
+    avgPtot = avgPtot + pow/12;
     randomWeibuls = wblrnd(lambda(i), k(i), N, 1);
     powers(:,i) = P(randomWeibuls);
     means(i) = mean(powers(:,i));
 end
 
 [sortedPowers,I] = sort(powers(:,12));
+avgPowerCoeff = mean(means/avgPtot);
 
-avgPowerCoeff = mean(means)/expectedTot;
+stds = std(means/avgPtot);
+conf = [avgPowerCoeff - 1.96*stds/sqrt(N); avgPowerCoeff + 1.96*stds/sqrt(N)];
+
 
 %%
 capacities = zeros(1,12);
