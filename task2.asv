@@ -208,10 +208,20 @@ for i = 1:12
 end
 
 [sortedPowers,I] = sort(powers(:,12));
-avgPowerCoeff = mean(means/avgPtot);
+avgPowerCoeff = mean(means)/avgPtot;
 
 stds = std(means/avgPtot);
-conf = [avgPowerCoeff - 1.96*stds/sqrt(N); avgPowerCoeff + 1.96*stds/sqrt(N)];
+means = mean(means);
+conf = [means - 1.96*stds/sqrt(N); means + 1.96*stds/sqrt(N)];
+
+figure
+scatter(1, means, 'rx');
+hold on 
+scatter(1:12, conf(2,:), 'm^')
+scatter(1:12, conf(1,:), 'mV')
+plot(1:12, conf(2,:), 'm-');
+plot(1:12, conf(1,:), 'm-')
+
 
 
 %%
