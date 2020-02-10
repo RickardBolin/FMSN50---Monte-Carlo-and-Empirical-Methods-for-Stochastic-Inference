@@ -134,6 +134,7 @@ xlim([1 12])
 legend([m1 s1 s2 s3],{'Mean','Standard','Truncated','Importance Sampling'})
 
 %%
+%Antithetic sampling
 
 U = rand(1,N/2);
 Uinv = 1 - U;
