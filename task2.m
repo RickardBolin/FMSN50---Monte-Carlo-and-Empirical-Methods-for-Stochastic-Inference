@@ -26,16 +26,16 @@ standard_width = abs(standard_conf(1,:)-standard_conf(2,:));
 figure
 scatter(1:12, standard_means, 'rx')
 hold on 
-plot(1:12, standard_means, 'r-')
+m1 = plot(1:12, standard_means, 'r-');
 scatter(1:12,standard_conf(2,:), 'b^')
 scatter(1:12, standard_conf(1,:), 'bV')
-plot(1:12, standard_conf(2,:), 'b-')
+s1 = plot(1:12, standard_conf(2,:), 'b-');
 plot(1:12, standard_conf(1,:), 'b-')
 hold off
 xticks(1:12)
 xticklabels(months)
 xlim([1 12])
-legend('Mean','Standard')
+legend([m1 s1],{'Mean','Standard'})
 
 
 %Truncated inverse sampling
@@ -62,8 +62,6 @@ figure
 scatter(1:12, standard_means, 'rx');
 hold on 
 m1 = plot(1:12, standard_means, 'r-');
-%scatter(1:12, trunc_means, 'mo');
-%m2 = plot(1:12, trunc_means, 'm-');
 
 scatter(1:12,standard_conf(2,:), 'b^')
 scatter(1:12, standard_conf(1,:), 'bV')
@@ -81,7 +79,8 @@ xlim([1 12])
 legend([m1 s1 s2],{'Mean','Standard','Truncated'})
 
 %% 
-close all
+%Importance Sampling
+
 mu = 11.5;
 sigma = 5;
 x = 0:0.1:40;
@@ -97,7 +96,6 @@ legend({'phi(x)','g(x)'})
 
 normNbrs = normrnd(mu, sigma, N, 1);
 
-%Importance Sampling
 powers = zeros(N,12);
 for i = 1:12
     powers(:,i) = P(normNbrs).*wblpdf(normNbrs, lambda(i), k(i))./g(normNbrs); % Divide by value at x in normal dist.
@@ -113,8 +111,7 @@ figure
 scatter(1:12, standard_means, 'rx');
 hold on 
 m1 = plot(1:12, standard_means, 'r-');
-%scatter(1:12, trunc_means, 'mo');
-%m2 = plot(1:12, trunc_means, 'm-');
+
 
 scatter(1:12,standard_conf(2,:), 'b^')
 scatter(1:12, standard_conf(1,:), 'bV')
@@ -159,8 +156,6 @@ figure
 scatter(1:12, standard_means, 'rx');
 hold on 
 m1 = plot(1:12, standard_means, 'r-');
-%scatter(1:12, trunc_means, 'mo');
-%m2 = plot(1:12, trunc_means, 'm-');
 
 scatter(1:12,standard_conf(2,:), 'b^')
 scatter(1:12, standard_conf(1,:), 'bV')
@@ -191,7 +186,7 @@ legend([m1 s1 s2 s3 s4],{'Mean','Standard','Truncated','Importance Sampling','An
 
 
 %%
-
+%Power coefficient
 rho = 1.225;
 d = 112;
 avgPtot = 0;
@@ -200,7 +195,7 @@ means = zeros(1,12);
 
 for i = 1:12
     Ptot = @(v) ((rho*pi*(d.^2).*(v.^3))/8).*wblpdf(v,lambda(i), k(i));
-    pow = integral(Ptot, 0, 100); %100 gives about the same answer as infty
+    pow = integral(Ptot, 0, 100);
     avgPtot = avgPtot + pow/12;
     randomWeibuls = wblrnd(lambda(i), k(i), N, 1);
     powers(:,i) = P(randomWeibuls);
@@ -215,6 +210,7 @@ conf = [avgPowerCoeff - 1.96*stds/sqrt(N); avgPowerCoeff + 1.96*stds/sqrt(N)];
 
 
 %%
+%Capacity
 capacities = zeros(1,12);
 for i = 1:12
     capacities(i) = means(i)/3.075e6;
@@ -222,3 +218,24 @@ end
 figure
 scatter(1:12, capacities(1:12))
 mean(capacities)
+
+%%
+figure
+scatter(1:12, standard_means, 'rx');
+
+
+hold on 
+scatter(1:12, trunc_means, 'gx');
+scatter(1:12, imp_means, 'cx');
+scatter(1:12, anti_means, 'mx');
+m1 = plot(1:12, standard_means, 'r-');
+m2 = plot(1:12, trunc_means, 'g-');
+m3 = plot(1:12, imp_means, 'c-');
+m4 = plot(1:12, anti_means, 'm-');
+
+
+hold off
+xticks(1:12)
+xticklabels(months)
+xlim([1 12])
+legend([m1 s1 s2 s3 s4],{'Standard','Truncated','Importance Sampling','Antithetic'})
