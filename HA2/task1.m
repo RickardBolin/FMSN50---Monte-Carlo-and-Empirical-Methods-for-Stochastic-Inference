@@ -1,8 +1,8 @@
 clear
 close all
 
-N = 16; %nbr of particles
-steps = 20; %steps
+N = 1000; %nbr of particles
+steps = 20; 
 dims = 2; %dimensions
 X = zeros(steps,dims,N);
 w = zeros(steps,N);
@@ -25,15 +25,22 @@ for k = 2:steps
         X(k,d,i) = X(k,d,i) + pos(randi(2));
 
         z = 1;
-        if(length(unique(X(1:k,:,i))) < k)
+        if(length(unique(X(1:k,:,i),'row')) < k)
             z = 0;
         end
         w(k,i) = w(k-1,i) * (z/(1/4)); 
    end
 end
-surv = w(10,:) > 0;
-%plot(X(:,1,surv),X(:,2,surv))
 
 probs = mean(w,2);
 
+plot(probs)
+
+
+
+
+
+
+
+w(k,i) = (nbFree/(dims*2))/z*(1/nbFree)
 
