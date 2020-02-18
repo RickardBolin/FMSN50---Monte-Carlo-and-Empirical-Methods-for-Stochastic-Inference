@@ -134,6 +134,7 @@ xlim([1 12])
 legend([m1 s1 s2 s3],{'Mean','Standard','Truncated','Importance Sampling'})
 
 %%
+%Antithetic sampling
 
 U = rand(1,N/2);
 Uinv = 1 - U;
@@ -186,7 +187,7 @@ legend([m1 s1 s2 s3 s4],{'Mean','Standard','Truncated','Importance Sampling','An
 
 
 %%
-%
+%Power coefficient
 rho = 1.225;
 d = 112;
 avgPtot = 0;
@@ -210,6 +211,7 @@ conf = [avgPowerCoeff - 1.96*stds/sqrt(N); avgPowerCoeff + 1.96*stds/sqrt(N)];
 
 
 %%
+%Capacity
 capacities = zeros(1,12);
 for i = 1:12
     capacities(i) = means(i)/3.075e6;
@@ -231,8 +233,6 @@ m1 = plot(1:12, standard_means, 'r-');
 m2 = plot(1:12, trunc_means, 'g-');
 m3 = plot(1:12, imp_means, 'c-');
 m4 = plot(1:12, anti_means, 'm-');
-
-
 
 
 hold off
