@@ -28,19 +28,10 @@ for k = 2:steps
         if(length(unique(X(1:k,:,i),'row')) < k)
             z = 0;
         end
-        w(k,i) = w(k-1,i) * (z/(1/(2*dims))); 
+        w(k,i) = w(k-1,i) * (z/(1/4)); 
    end
 end
 
 probs = mean(w,2);
 
 plot(probs)
-
-
-
-
-
-
-
-w(k,i) = (nbFree/(dims*2))/z*(1/nbFree);
-
