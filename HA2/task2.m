@@ -20,27 +20,18 @@ end
 for k = 2:steps
    X(k,:,:) = X(k-1,:,:);
    for i = 1:N
-        d = randi(dims);
-        pos = [1 -1];
-        X(k,d,i) = X(k,d,i) + pos(randi(2));
+        [oneHotDir, nfree] = g(X(1:k,:,i));
+        X(k,:,i) = X(k,:,i) + oneHotDir;
 
         z = 1;
         if(length(unique(X(1:k,:,i),'row')) < k)
             z = 0;
         end
-        w(k,i) = w(k-1,i) * (z/(1/(2*dims))); 
+        w(k,i) = w(k-1,i) * (z/(1/(nfree))); 
    end
 end
 
 probs = mean(w,2);
 
 plot(probs)
-
-
-
-
-
-
-
-w(k,i) = (nbFree/(dims*2))/z*(1/nbFree);
 

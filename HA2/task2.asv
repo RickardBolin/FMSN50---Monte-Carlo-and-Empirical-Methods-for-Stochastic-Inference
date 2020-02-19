@@ -22,7 +22,8 @@ for k = 2:steps
    for i = 1:N
         d = randi(dims);
         pos = [1 -1];
-        X(k,d,i) = X(k,d,i) + pos(randi(2));
+        [oneHotDir, ~] = g(x);
+        X(k,:,i) = X(k + g
 
         z = 1;
         if(length(unique(X(1:k,:,i),'row')) < k)
