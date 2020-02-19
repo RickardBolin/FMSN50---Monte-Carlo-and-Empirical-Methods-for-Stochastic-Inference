@@ -9,6 +9,7 @@ for i = 1:2*dims
         possibleDirs(i,:) = oneHotDirs(i,:);
     end
 end
+% Remove the zero rows
 possibleDirs = possibleDirs(~all(possibleDirs == 0,2), :);
 
 % Count how many of them are free
