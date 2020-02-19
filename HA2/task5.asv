@@ -2,7 +2,7 @@ clear
 close all
 
 N = 1000; %nbr of particles
-steps = 20; 
+steps = 40; 
 dims = 2; %dimensions
 X = zeros(steps,dims,N);
 w = zeros(steps,N);
@@ -42,7 +42,11 @@ for k = 2:steps
    end 
 end
 
-probs = cumprod(mean(w,2));
+cn = cumprod(mean(w,2));
+%%
+mu2 = nthroot(cn', 1:steps);
+gamma2 = 43/32;
+A2 = 
+plot(cn)
 
-plot(probs)
-
+plot(mu)
