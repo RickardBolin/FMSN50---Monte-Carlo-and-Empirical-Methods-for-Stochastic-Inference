@@ -3,7 +3,7 @@ close all
 
 N = 1000; %nbr of particles
 steps = 20; 
-dims = 3; %dimensions
+dims = 2; %dimensions
 X = zeros(steps,dims,N);
 w = zeros(steps,N);
 
