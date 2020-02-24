@@ -1,8 +1,8 @@
 clear
 close all
 
-N = 1000; % Number of particles
-steps = 20 + 1; 
+N = 10000; % Number of particles
+steps = 10 + 1; 
 dims = 2; % Dimensions
 X = zeros(steps,dims,N);
 w = zeros(steps,N);
@@ -41,6 +41,20 @@ end
 
 % Calculate approximation of number of self avoiding walks
 cn = cumprod(mean(w(2:end,:),2));
+
+%%
+figure
+plot(cn)
+title('Approximate number of self avoiding random walks')
+xlabel('Walk length')
+ylabel('Approximate number of SAW') 
+
+%%
+% Find the number of surviving particles at each step
+survivors = zeros(steps, 1);
+for i = 1:steps
+    survivors(i) = N - sum(length(find(w(i,:)==0)));
+end
 
 %% Regression 
 Y = log(cn) + log(1:steps-1)';

@@ -1,12 +1,12 @@
 clear
 close all
 
-N = 500; % Number of particles
+N = 1000; % Number of particles
 steps = 10 + 1; 
-dims = 10; % Dimensions
+dims = 7; % Dimensions
 X = zeros(steps,dims,N);
 w = zeros(steps,N);
-
+1.0858, 12,8955
 % Set all starting weights to 1
 w(1,:) = 1;
 
@@ -39,17 +39,15 @@ for k = 2:steps
    end
 end
 
+% Calculate approximation of number of self avoiding walks
 cn = cumprod(mean(w(2:end,:),2));
-%%
-mu2lim = nthroot(cn', 1:steps-1);
-mu2 = mu2lim(end);
-gamma2 = 43/32;
-mu2nngamma2minus1 = (mu2.^(1:steps-1)).*((1:steps-1).^(gamma2-1));
 
-A2 = cn./mu2nngamma2minus1';
-%%
-Y = log(cn) + log(1:steps)';
-X_reg = [ones(steps,1) (1:steps)' log(1:steps)'];
+%% Theoretical boundary
+mu_theo = 2*dims - 1 - 1/(2*dims) - 3/((2*dims)^2) - 16/((2*dims)^2);
+%% Regression 
+
+Y = log(cn) + log(1:steps-1)';
+X_reg = [ones(steps-1,1) (1:steps-1)' log(1:steps-1)'];
 
 beta = X_reg\Y;
 expbeta = exp(beta)';
@@ -58,6 +56,6 @@ A_reg = expbeta(1);
 mu_reg = expbeta(2);
 gamma_reg = beta(3);
 
-cn_reg = A_reg*(mu_reg.^(1:steps)).*((1:steps).^(gamma_reg - 1));
+cn_reg = A_reg*(mu_reg.^(1:steps-1)).*((1:steps-1).^(gamma_reg - 1));
 
 e = cn_reg' - cn;

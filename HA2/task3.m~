@@ -1,9 +1,9 @@
 clear
 close all
 
-N = 1000; %nbr of particles
+N = 1000; % Number of particles
 steps = 20; 
-dims = 2; %dimensions
+dims = 2; % Dimensions
 X = zeros(steps,dims,N);
 w = zeros(steps,N);
 

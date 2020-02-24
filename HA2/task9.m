@@ -1,15 +1,12 @@
 clear
 close all
-
-N = 500; % Number of particles
+N = 1000; % Number of particles
 steps = 10 + 1; 
-dims = 10; % Dimensions
+dims = 6; % Dimensions
 X = zeros(steps,dims,N);
 w = zeros(steps,N);
-
 % Set all starting weights to 1
 w(1,:) = 1;
-
 for k = 2:steps
    weight_distro = cumsum(w(k - 1,:)./sum(w(k - 1,:)));
    for i = 1:N
@@ -22,7 +19,6 @@ for k = 2:steps
         % Sample possible directions
         [oneHotDir, nfree] = g(X(1:k - 1,:,i));
         X(k,:,i) = X(k - 1,:,i) + oneHotDir;
-        
         
         % Is it self avoiding?
         z = 1;
@@ -42,6 +38,8 @@ end
 % Calculate approximation of number of self avoiding walks
 cn = cumprod(mean(w(2:end,:),2));
 
+%% Theoretical boundary
+mu_theo = 2*dims - 1 - 1/(2*dims) - 3/((2*dims)^2) - 16/((2*dims)^2);
 %% Regression 
 
 Y = log(cn) + log(1:steps-1)';

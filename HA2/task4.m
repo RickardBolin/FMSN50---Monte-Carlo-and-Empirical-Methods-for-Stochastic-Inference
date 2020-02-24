@@ -47,4 +47,3 @@ survivors = zeros(steps, 1);
 for i = 1:steps
     survivors(i) = N - sum(length(find(w(i,:)==0)));
 end
-

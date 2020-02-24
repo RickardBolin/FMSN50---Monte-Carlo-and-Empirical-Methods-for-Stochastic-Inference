@@ -31,12 +31,14 @@ end
 
 % Calculate approximation of number of self avoiding walks
 cn = mean(w(2:end,:),2);
+
 %%
 figure
 plot(cn)
 title('Approximate number of self avoiding random walks')
 xlabel('Walk length')
 ylabel('Approximate number of SAW') 
+
 %%
 % Find the number of surviving particles at each step
 survivors = zeros(steps, 1);
