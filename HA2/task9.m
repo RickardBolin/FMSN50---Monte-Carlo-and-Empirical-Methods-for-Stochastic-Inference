@@ -2,7 +2,7 @@ clear
 close all
 
 N = 1000; %nbr of particles
-steps = 30; 
+steps = 10; 
 dims = 5; %dimensions
 X = zeros(steps,dims,N);
 w = zeros(steps,N);
@@ -30,9 +30,9 @@ for k = 2:steps
         
         %1Sn, is it self avoiding?
         z = 1;
-        if(length(unique(X(1:k,:,i),'row')) < k)
-            z = 0;
-        end
+       % if(length(unique(X(1:k,:,i),'row')) < k)
+       %     z = 0;
+       % end
         
         %set weight
         w(k,i) = (z/(1/(nfree))); 
@@ -52,17 +52,22 @@ mu2nngamma2minus1 = (mu2.^(1:steps)).*((1:steps).^(gamma2-1));
 A2 = cn./mu2nngamma2minus1';
 %%
 Y = log(cn) + log(1:steps)';
-X = [ones(steps,1) (1:steps)' log(1:steps)'];
+X_reg = [ones(steps,1) (1:steps)' log(1:steps)'];
 
-beta = X\Y;
+beta = X_reg\Y;
+
+beta = (X_reg'*X_reg)\X_reg'*Y;
+
+
 expbeta = exp(beta)';
 
 A_reg = expbeta(1);
 mu_reg = expbeta(2);
-gamma_reg = beta(3);
+gamma_reg = 1;%beta(3);
 
 cn_reg = A_reg*(mu_reg.^(1:steps)).*((1:steps).^(gamma_reg - 1));
-cn_math = mean(A2)*(mu2.^(1:steps)).*((1:steps).^(gamma2 - 1));
 
 e = cn_reg' - cn;
-e_math = cn_math' - cn;
+
+mu_theo = 2*dims - 1 - 1/(2*dims) - 3/((2*dims)^2) - 16/((2*dims)^2);
+
