@@ -1,29 +1,25 @@
 clear
 close all
 
-N = 1000; %nbr of particles
-steps = 20; 
-dims = 2; %dimensions
+N = 10000; % Number of particles
+steps = 10 + 1; 
+dims = 2; % Dimensions
 X = zeros(steps,dims,N);
 w = zeros(steps,N);
 
-for i = 1:N
-    for d = 1:dims
-         X(1,d,i) = 0;
-    end
-    w(1,i) = 1;
-end
+% Set all starting weights to 1
+w(1,:) = 1;
 
 for k = 2:steps
    weight_distro = cumsum(w(k - 1,:)./sum(w(k - 1,:)));
    for i = 1:N
        
-        %Resample
+        % Resample
         parent_index = find((weight_distro > rand) == 1);
         parent_index = parent_index(1);
         X(1:k - 1,:,i) = X(1:k - 1,:,parent_index);        
        
-        %Sample possible directions
+        % Sample possible directions
         [oneHotDir, nfree] = g(X(1:k - 1,:,i));
         X(k,:,i) = X(k - 1,:,i) + oneHotDir;
         
@@ -34,35 +30,41 @@ for k = 2:steps
             z = 0;
         end
         
-        %set weight
+        % Set weight
         w(k,i) = (z/(1/(nfree))); 
    end 
+   % Print progress
    if mod(k,5) == 0
-      k 
+      disp("Progress: Step " + k + "/" + (steps - 1)) 
    end
 end
 
-cn = cumprod(mean(w,2));
-%%
-mu2lim = nthroot(cn', 1:steps);
-mu2 = mu2lim(end);
-gamma2 = 43/32;
-mu2nngamma2minus1 = (mu2.^(1:steps)).*((1:steps).^(gamma2-1));
+% Calculate approximation of number of self avoiding walks
+cn = cumprod(mean(w(2:end,:),2));
 
-A2 = cn./mu2nngamma2minus1';
 %%
-Y = log(cn) + log(1:steps)';
-X = [ones(steps,1) (1:steps)' log(1:steps)'];
+figure
+plot(cn)
+title('Approximate number of self avoiding random walks')
+xlabel('Walk length')
+ylabel('Approximate number of SAW') 
 
-beta = X\Y;
+%%
+% Find the number of surviving particles at each step
+survivors = zeros(steps, 1);
+for i = 1:steps
+    survivors(i) = N - sum(length(find(w(i,:)==0)));
+end
+
+%% Regression 
+Y = log(cn) + log(1:steps-1)';
+X_reg = [ones(steps-1,1) (1:steps-1)' log(1:steps-1)'];
+
+beta = X_reg\Y;
 expbeta = exp(beta)';
 
 A2_reg = expbeta(1);
 mu2_reg = expbeta(2);
 gamma2_reg = beta(3);
 
-cn_reg = A2_reg*(mu2_reg.^(1:steps)).*((1:steps).^(gamma2_reg - 1));
-cn_math = mean(A2)*(mu2.^(1:steps)).*((1:steps).^(gamma2 - 1));
-
-e = cn_reg' - cn;
-e_math = cn_math' - cn;
+cn_reg = A2_reg*(mu2_reg.^(1:steps-1)).*((1:steps-1).^(gamma2_reg - 1));
