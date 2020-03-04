@@ -12,9 +12,10 @@ t = linspace(1658, 1980, d+2)';
 % Initialize lambda
 cond_lambda = 5;
     
-t_tracker = [];
+steps = 50000;
+t_tracker = zeros(d+2, steps);
 accidents = zeros(d+1, 1);
-for steps = 1:50000
+for step = 1:steps
     % Get number of accidents in each interval
     startpoints = t(1:end-1);
     endpoints = t(2:end);
@@ -29,7 +30,7 @@ for steps = 1:50000
     % Calculate (t|theta, lambda, T) with a Metropolis-Hastings sampler  
     t = MCMC_MH(cond_lambda, t, T);
     % Save the current state of the random walk
-    t_tracker = [t_tracker, t];
+    t_tracker(:,step) = t;
 end
 
 % Plot the random walks
