@@ -5,9 +5,9 @@ addpath('Data')
 load coal_mine_disasters.mat
 
 % Number of breakpoints (not including start and end)
-d = 8;
+d = 5;
 % Hyperparameter psi, chosen by us
-psi = 15;
+psi = 25;
 % Initial breakpoints (together with start- and endpoint)
 t = linspace(1658, 1980, d+2)';
 % Initialize lambda
@@ -34,11 +34,14 @@ for step = 1:steps
     t_tracker(:,step) = t;
     
     if(mod(step,10000) == 0)
-       disp(['Step: ' int2str(step) ' / ' int2str(steps)])       
+       disp('Step: ')
+       disp(int2str(step))
+       disp'
+       
     end
     
 end
-%%
+
 % Plot the random walks
 figure
 hold on
