@@ -5,7 +5,7 @@ addpath('Data')
 load coal_mine_disasters.mat
 
 % Number of breakpoints (not including start and end)
-d = 5;
+d = 20;
 % Hyperparameter psi, chosen by us
 psi = 15;
 % Initial breakpoints (together with start- and endpoint)
