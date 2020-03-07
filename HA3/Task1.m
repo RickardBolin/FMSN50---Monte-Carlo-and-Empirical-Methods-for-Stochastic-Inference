@@ -4,9 +4,9 @@ clear
 load coal_mine_disasters.mat
 
 % Number of breakpoints (not including start and end)
-d = 5;
+d = 8;
 % Hyperparameter psi, chosen by us
-psi = 25;
+psi = 15;
 % Initial breakpoints (together with start- and endpoint)
 t = linspace(1658, 1980, d+2)';
 % Initialize lambda
@@ -32,7 +32,7 @@ for step = 1:steps
     % Save the current state of the random walk
     t_tracker(:,step) = t;
 end
-
+%%
 % Plot the random walks
 figure
 hold on
