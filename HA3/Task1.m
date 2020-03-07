@@ -63,7 +63,6 @@ for psi_index = 1:npsis
                disp([num2str(rho_index + (psi_index - 1)*nrhos) '/' num2str(nrhos*npsis) ' ' num2str(100*q) '% |' char(ones(1,floor(50*q))*'=') char(ones(1, ceil(50 - 50*q))*' ') '|'])       
             end
         end
->>>>>>> b6e212a01ddf8234f8ebcd7cd6c9b6b242889901
     end
     theta_on_psi(psi_index,:) = cond_theta;
     lambda_on_psi(psi_index,:) = cond_lambda;
@@ -140,10 +139,6 @@ for i = 1:d+1
 end
     plot([1980 1980],[0 800])
 
-<<<<<<< HEAD
 %% Calculate autocorrelation
 figure
 acf(t_tracker(6,:)', 550);
-=======
-
->>>>>>> b6e212a01ddf8234f8ebcd7cd6c9b6b242889901
