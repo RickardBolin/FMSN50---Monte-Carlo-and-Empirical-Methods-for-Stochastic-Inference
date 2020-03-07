@@ -7,7 +7,7 @@ load coal_mine_disasters.mat
 % Number of breakpoints (not including start and end)
 d = 5;
 % Hyperparameter psi, chosen by us
-psi = 25;
+psi = 15;
 % Initial breakpoints (together with start- and endpoint)
 t = linspace(1658, 1980, d+2)';
 % Initialize lambda
@@ -21,7 +21,7 @@ accidents = zeros(d+1, 1);
 rhos = linspace(0,0.1,50);
 nrhos = length(rhos);
 
-psis = 25%linspace(0,50,50);
+psis = 25;%linspace(0,50,50);
 npsis = length(psis);
 
 acceptance_rate = zeros(nrhos,npsis);
@@ -101,6 +101,7 @@ title('Acceptance rate dependent on psi')
 ylabel('Acceptance rate')
 xlabel('Psi')
 
+
 % Plot the random walks
 figure
 hold on
@@ -109,3 +110,21 @@ for i = 1:d+2
 end
 hold off
 ylim([1600 2000])
+
+deriv = zeros(d+1,1);
+figure
+plot(T,cumsum(T > 0))
+hold on
+
+start = 0;
+for i = 1:d+1
+    y = find(T > t(i) & T < t(i+1));
+    y1 = y(1);
+    y2 = y(end);
+    deriv(i) = (y2-y1)/(t(i+1)-t(i));
+    line = cond_lambda(i)*linspace(0,t(i+1)-t(i)) + start;
+    start = line(end);
+    plot(linspace(t(i), t(i+1)), line)
+end
+
+
