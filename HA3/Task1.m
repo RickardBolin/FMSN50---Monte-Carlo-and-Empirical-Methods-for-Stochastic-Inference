@@ -15,6 +15,7 @@ cond_lambda = 5;
     
 steps = 100000;
 t_tracker = zeros(d+2, steps/50);
+
 accidents = zeros(d+1, 1);
 for step = 1:steps
     % Get number of accidents in each interval
@@ -36,8 +37,9 @@ for step = 1:steps
         t_tracker(:,step/50) = t;
     end
     
-    if(mod(step,10000) == 0)
-       disp(['Step: ' int2str(step) ' / ' int2str(steps)])       
+    if(mod(step,floor(steps/100)) == 0)
+       clc
+       disp([num2str(100*step/steps) '% |' char(ones(1,floor(50*step/steps))*'=') char(ones(1, ceil(50 - 50*step/steps))*' ') '|'])       
     end
     
 end
