@@ -11,4 +11,3 @@ end
 % Calculate X_{k+1} 
 fX = exp(sum(log(lambda).*accidents + log(t(2:end)-t(1:end-1)) - lambda.*(t(2:end)-t(1:end-1))));
 end
-

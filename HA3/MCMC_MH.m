@@ -26,7 +26,3 @@ i = randi(length(t) - 2) + 1;
         t(i) = X;
     end
 end
-
-
-
-
