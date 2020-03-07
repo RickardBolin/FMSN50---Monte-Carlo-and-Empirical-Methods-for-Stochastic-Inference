@@ -5,7 +5,7 @@ addpath('Data')
 load coal_mine_disasters.mat
 
 % Number of breakpoints (not including start and end)
-d = 2;
+d = 5;
 % Hyperparameter psi, chosen by us
 psi = 15;
 % Initial breakpoints (together with start- and endpoint)
@@ -13,9 +13,9 @@ t = linspace(1658, 1980, d+2)';
 % Initialize lambda
 cond_lambda = 5;
     
-steps = 5e4;
+steps = 1e5;
 burn_in = 3000;
-jump = 50;
+jump = 1;
 t_tracker = zeros(d+2, (steps-burn_in)/jump);
 
 accidents = zeros(d+1, 1);
@@ -78,3 +78,6 @@ for i = 1:d+1
 end
     plot([1980 1980],[0 800])
 
+%% Calculate autocorrelation
+figure
+acf(t_tracker(6,:)', 550);

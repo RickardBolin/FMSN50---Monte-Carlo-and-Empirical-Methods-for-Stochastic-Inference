@@ -1,10 +1,10 @@
 % Pseudo-code can be found in slide 5 in lecture 10:
 % http://www.maths.lth.se/matstat/kurser/fmsn50masm11/2020/material/L10.pdf
 function t = MCMC_MH(lambda, t, T)
-rho = 0.01;
+rho = 0.1;
 %selecting one t_i at random
-i = randi(length(t) - 2) + 1;
-%for i = 2:length(t)-1
+%i = randi(length(t) - 2) + 1;
+for i = 2:length(t)-1
     % Calculate the maximum step size based on the interval width
     
     R = rho*(t(i+1)-t(i-1));
