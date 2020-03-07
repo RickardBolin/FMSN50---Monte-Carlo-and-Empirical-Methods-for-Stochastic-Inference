@@ -13,7 +13,7 @@ t = linspace(1658, 1980, d+2)';
 % Initialize lambda
 cond_lambda = 5;
     
-steps = 100000;
+steps = 1000000;
 t_tracker = zeros(d+2, steps);
 accidents = zeros(d+1, 1);
 for step = 1:steps
@@ -33,7 +33,7 @@ for step = 1:steps
     % Save the current state of the random walk
     t_tracker(:,step) = t;
     
-    if(mod(step,1000) == 0)
+    if(mod(step,floor(steps/100)) == 0)
        clc
        disp([num2str(100*step/steps) '% |' char(ones(1,floor(50*step/steps))*'=') char(ones(1, ceil(50 - 50*step/steps))*' ') '|'])       
     end

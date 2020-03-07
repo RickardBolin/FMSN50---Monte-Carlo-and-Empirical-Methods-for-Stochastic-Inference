@@ -1,0 +1,17 @@
+clc
+clear
+close all
+addpath('Data')
+f = fopen('atlantic.txt');
+data = textscan(f,'%s');
+fclose(f);
+atlantic = str2double(data{1});
+n = length(atlantic);
+
+[beta,mu] = est_gumbel(atlantic);
+
+Finv = @(x, mu, beta) mu - beta*log(-log(x));
+
+u = rand(n,1);
+for i = 1:
+fakeAtlantic = Finv(u,mu,beta)
