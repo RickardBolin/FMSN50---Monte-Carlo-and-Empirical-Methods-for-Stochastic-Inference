@@ -34,7 +34,10 @@ for step = 1:steps
     t_tracker(:,step) = t;
     
     if(mod(step,10000) == 0)
-       disp(['Step: ' int2str(step) ' / ' int2str(steps)])       
+       disp('Step: ')
+       disp(int2str(step))
+       disp'
+       
     end
     
 end
