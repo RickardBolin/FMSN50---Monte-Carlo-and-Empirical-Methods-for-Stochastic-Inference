@@ -33,8 +33,9 @@ for step = 1:steps
     % Save the current state of the random walk
     t_tracker(:,step) = t;
     
-    if(mod(step,10000) == 0)
-       disp(['Step: ' int2str(step) ' / ' int2str(steps)])       
+    if(mod(step,1000) == 0)
+       clc
+       disp([num2str(100*step/steps) '% |' char(ones(1,floor(50*step/steps))*'=') char(ones(1, ceil(50 - 50*step/steps))*' ') '|'])       
     end
     
 end
