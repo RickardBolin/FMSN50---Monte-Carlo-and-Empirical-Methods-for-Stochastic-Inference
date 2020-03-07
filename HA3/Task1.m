@@ -1,6 +1,7 @@
 clc
 close all
 clear
+addpath('Data')
 load coal_mine_disasters.mat
 
 % Number of breakpoints (not including start and end)
@@ -12,7 +13,7 @@ t = linspace(1658, 1980, d+2)';
 % Initialize lambda
 cond_lambda = 5;
     
-steps = 50000;
+steps = 100000;
 t_tracker = zeros(d+2, steps);
 accidents = zeros(d+1, 1);
 for step = 1:steps
@@ -31,6 +32,9 @@ for step = 1:steps
     t = MCMC_MH(cond_lambda, t, T);
     % Save the current state of the random walk
     t_tracker(:,step) = t;
+    
+    if(st
+    
 end
 
 % Plot the random walks
