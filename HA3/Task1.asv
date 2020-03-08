@@ -21,7 +21,7 @@ t_tracker = zeros(d+2, (steps-burn_in)/jump);
 theta_tracker = zeros(d+1, (steps-burn_in)/jump);
 lambda_tracker = zeros(d+1, (steps-burn_in)/jump);
 
-rhos = 0.055;
+rhos = linspace(0,0.1,100);0.055;%
 nrhos = length(rhos);
 
 psis = 2.33;
@@ -188,9 +188,6 @@ end
 
 figure
 plot(acfs(:,1:1000)')
-legend('rho = 0','rho = 0.001','rho = 0.05','rho = 0.1')
-title('ACFs on rho for t_6')
-ylabel('Autocorrelation')
-xlabel('Step')
+legend(['rho = ' num2str(inds(1))],['rho = ' num2str(inds(2))])
 
 
