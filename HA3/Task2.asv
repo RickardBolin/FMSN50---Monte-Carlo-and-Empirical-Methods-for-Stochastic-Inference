@@ -7,8 +7,7 @@ data = textscan(f,'%s');
 fclose(f);
 atlantic = str2double(data{1});
 n = length(atlantic);
-%Slajd 33
-%http://www.maths.lth.se/matstat/kurser/fmsn50masm11/2020/material/L13.pdf
+
 [beta,mu] = est_gumbel(atlantic);
 
 Finv = @(x, mu1, beta1) mu1 - beta1*log(-log(x));
@@ -19,8 +18,6 @@ bs_betas = zeros(nsamples,1);
 bs_retwave = zeros(nsamples,1);
 
 T = 3*14*100;
-big_wave = Finv(1 - 1/T, mu, beta);
-
 
 for i = 1:nsamples
     u = rand(n,1);
@@ -37,7 +34,7 @@ for i = 1:nsamples
        disp([num2str(100*q) '% |' char(ones(1,floor(50*q))*'=') char(ones(1, ceil(50 - 50*q))*' ') '|'])       
     end
 end
-
+big_wave = Finv(1 - 1/T, mu, beta);
 delta_wave =  big_wave - bs_retwave;
 delta_mu = mu - bs_mus;
 delta_beta = beta - bs_betas;
@@ -48,5 +45,13 @@ alpha = 0.05;
 
 conf_mu =  mu - [delta_mu(ceil((1 - alpha/2)*nsamples)), delta_mu(ceil(alpha*nsamples/2))]
 conf_beta =  beta - [delta_beta(ceil((1 - alpha/2)*nsamples)), delta_beta(ceil(alpha*nsamples/2))]
-conf_wave = big_wave + delta_wave(ceil((1 - alpha)*nsamples))
+conf_wave = big_wave + delta_wave(ceil(alpha*))
+
+%conf_mu = mu + 1.96*std(bs_mus)*[-1,1]/sqrt(nsamples)
+%conf_beta = beta + 1.96*std(bs_betas)*[-1,1]/sqrt(nsamples)
+%conf_retwave = mean(bs_retwave) + 1.64*std(bs_retwave)/sqrt(nsamples)
+
+
+
+
 

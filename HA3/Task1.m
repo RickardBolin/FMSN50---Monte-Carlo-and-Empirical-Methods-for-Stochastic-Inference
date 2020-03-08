@@ -21,7 +21,7 @@ t_tracker = zeros(d+2, (steps-burn_in)/jump);
 theta_tracker = zeros(d+1, (steps-burn_in)/jump);
 lambda_tracker = zeros(d+1, (steps-burn_in)/jump);
 
-rhos = 0.055;
+rhos = linspace(0,0.1,100);%0.055;
 nrhos = length(rhos);
 
 psis = 25;%linspace(0,50,50);
@@ -31,6 +31,10 @@ acceptance_rate = zeros(nrhos,npsis);
 theta_on_psi = zeros(npsis, d + 1);
 lambda_on_psi = zeros(npsis, d + 1);
 meant_on_psi = zeros(npsis, d + 2);
+
+theta_on_rho = zeros(nrhos, d + 1);
+lambda_on_rho = zeros(nrhos, d + 1);
+meant_on_rho = zeros(nrhos, d + 2);
 
 
 for psi_index = 1:npsis
@@ -67,13 +71,16 @@ for psi_index = 1:npsis
                disp([num2str(rho_index + (psi_index - 1)*nrhos) '/' num2str(nrhos*npsis) ' ' num2str(100*q) '% |' char(ones(1,floor(50*q))*'=') char(ones(1, ceil(50 - 50*q))*' ') '|'])       
             end
         end
+        theta_on_rho(rho_index,:) = mean(theta_tracker,2);
+        lambda_on_rho(rho_index,:) = mean(lambda_tracker,2);
+        meant_on_rho(rho_index,:) = mean(t_tracker,2);
     end
     theta_on_psi(psi_index,:) = mean(theta_tracker,2);
     lambda_on_psi(psi_index,:) = mean(lambda_tracker,2);
     meant_on_psi(psi_index,:) = mean(t_tracker,2);
 end
 acceptance_rate = acceptance_rate./steps;
-%% plots
+%% psi plots
 close all
 
 figure
@@ -96,20 +103,41 @@ ylabel('t')
 xlabel('Psi')
 
 
-%plot acceptance rate
-figure
-scatter(rhos, acceptance_rate(:,1))
-title('Acceptance rate dependent on rho')
-ylabel('Acceptance rate')
-xlabel('Rho')
-
 figure
 scatter(psis, acceptance_rate(1,:))
 title('Acceptance rate dependent on psi')
 ylabel('Acceptance rate')
 xlabel('Psi')
 
+%% Rho plots
+close all
+figure
+plot(rhos, mean(theta_on_rho,2))
+title('Mean theta dependent on rho')
+ylabel('Mean theta')
+xlabel('rho')
 
+figure
+plot(rhos, lambda_on_rho)
+title('Lambda parameters dependent on rho')
+ylabel('Lambda')
+xlabel('rho')
+
+
+figure
+plot(rhos, meant_on_rho)
+title('Mean t parameters dependent on rho')
+ylabel('t')
+xlabel('rho')
+
+figure
+scatter(rhos, acceptance_rate(:,1))
+title('Acceptance rate dependent on rho')
+ylabel('Acceptance rate')
+xlabel('Rho')
+
+
+%% MH plots
 % Plot the random walks
 figure
 plot(t_tracker')
