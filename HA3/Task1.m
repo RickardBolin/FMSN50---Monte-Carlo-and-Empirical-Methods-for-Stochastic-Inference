@@ -13,13 +13,13 @@ t = linspace(1658, 1980, d+2)';
 % Initialize lambda
 cond_lambda = 5;
     
-steps = 1e5;
+steps = 2e5;
 accidents = zeros(d+1, 1);
 burn_in = 3000;
-jump = 1;
+jump = 100;
 t_tracker = zeros(d+2, (steps-burn_in)/jump);
 
-rhos = linspace(0,0.1,50);
+rhos = 0.01;%linspace(0,0.1,50);
 nrhos = length(rhos);
 
 psis = 25;%linspace(0,50,50);
@@ -69,7 +69,7 @@ for psi_index = 1:npsis
     meant_on_psi(psi_index,:) = mean(t_tracker,2);
 end
 acceptance_rate = acceptance_rate./steps;
-%% plots
+%% Plots
 
 
 figure
@@ -92,7 +92,7 @@ ylabel('t')
 xlabel('Psi')
 
 
-%plot acceptance rate
+% Plot acceptance rate
 figure
 scatter(rhos, acceptance_rate(:,1))
 title('Acceptance rate dependent on rho')
@@ -109,7 +109,7 @@ xlabel('Psi')
 % Plot the random walks
 figure
 hold on
-title(['Chains of ' num2str(d+1) ' breakpoints obtained from hybrid Metropolis-Hastings sampler'])
+title(['Chains of ' num2str(d) ' breakpoints obtained from hybrid Metropolis-Hastings sampler'])
 xlabel('Step') 
 ylabel('Year') 
 for i = 1:d+2
@@ -141,4 +141,4 @@ end
 
 %% Calculate autocorrelation
 figure
-acf(t_tracker(6,:)', 550);
+acf(t_tracker(6,:)', 2000);
