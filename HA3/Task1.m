@@ -6,22 +6,24 @@ load coal_mine_disasters.mat
 
 % Number of breakpoints (not including start and end)
 d = 5;
-% Hyperparameter psi, chosen by us
-psi = 15;
 % Initial breakpoints (together with start- and endpoint)
 t = linspace(1658, 1980, d+2)';
 % Initialize lambda
 cond_lambda = 5;
-    
 steps = 2e5;
+
 accidents = zeros(d+1, 1);
 burn_in = 3000;
 jump = 100;
 t_tracker = zeros(d+2, (steps-burn_in)/jump);
+theta_tracker = zeros(d+1, (steps-burn_in)/jump);
+lambda_tracker = zeros(d+1, (steps-burn_in)/jump);
 
-rhos = 0.01;%linspace(0,0.1,50);
+% 
+rhos = 0.055;%linspace(0,0.1,100);
 nrhos = length(rhos);
 
+% Hyperparameter psi, chosen by us
 psis = 25;%linspace(0,50,50);
 npsis = length(psis);
 
@@ -29,6 +31,10 @@ acceptance_rate = zeros(nrhos,npsis);
 theta_on_psi = zeros(npsis, d + 1);
 lambda_on_psi = zeros(npsis, d + 1);
 meant_on_psi = zeros(npsis, d + 2);
+
+theta_on_rho = zeros(nrhos, d + 1);
+lambda_on_rho = zeros(nrhos, d + 1);
+meant_on_rho = zeros(nrhos, d + 2);
 
 
 for psi_index = 1:npsis
@@ -55,6 +61,8 @@ for psi_index = 1:npsis
             % relatively independent samples
             if(mod(step, jump) == 0 && step > burn_in)
                 t_tracker(:,(step-burn_in)/jump) = t;
+                theta_tracker(:,(step-burn_in)/jump) = cond_theta;
+                lambda_tracker(:,(step-burn_in)/jump) = cond_lambda;
             end
             
             if(mod(step,floor(steps/100)) == 0 )
@@ -63,14 +71,18 @@ for psi_index = 1:npsis
                disp([num2str(rho_index + (psi_index - 1)*nrhos) '/' num2str(nrhos*npsis) ' ' num2str(100*q) '% |' char(ones(1,floor(50*q))*'=') char(ones(1, ceil(50 - 50*q))*' ') '|'])       
             end
         end
+        theta_on_rho(rho_index,:) = mean(theta_tracker,2);
+        lambda_on_rho(rho_index,:) = mean(lambda_tracker,2);
+        meant_on_rho(rho_index,:) = mean(t_tracker,2);
     end
-    theta_on_psi(psi_index,:) = cond_theta;
-    lambda_on_psi(psi_index,:) = cond_lambda;
+    theta_on_psi(psi_index,:) = mean(theta_tracker,2);
+    lambda_on_psi(psi_index,:) = mean(lambda_tracker,2);
     meant_on_psi(psi_index,:) = mean(t_tracker,2);
 end
 acceptance_rate = acceptance_rate./steps;
-%% Plots
 
+%% Psi plots
+close all
 
 figure
 plot(psis, mean(theta_on_psi,2))
@@ -84,20 +96,11 @@ title('Lambda parameters dependent on Psi')
 ylabel('Lambda')
 xlabel('Psi')
 
-
 figure
 plot(psis, meant_on_psi)
 title('Mean t parameters dependent on Psi')
 ylabel('t')
 xlabel('Psi')
-
-
-% Plot acceptance rate
-figure
-scatter(rhos, acceptance_rate(:,1))
-title('Acceptance rate dependent on rho')
-ylabel('Acceptance rate')
-xlabel('Rho')
 
 figure
 scatter(psis, acceptance_rate(1,:))
@@ -105,17 +108,41 @@ title('Acceptance rate dependent on psi')
 ylabel('Acceptance rate')
 xlabel('Psi')
 
+%% Rho plots
+close all
+figure
+plot(rhos, mean(theta_on_rho,2))
+title('Mean theta dependent on rho')
+ylabel('Mean theta')
+xlabel('rho')
 
+figure
+plot(rhos, lambda_on_rho)
+title('Lambda parameters dependent on rho')
+ylabel('Lambda')
+xlabel('rho')
+
+
+figure
+plot(rhos, meant_on_rho)
+title('Mean t parameters dependent on rho')
+ylabel('t')
+xlabel('rho')
+
+figure
+scatter(rhos, acceptance_rate(:,1))
+title('Acceptance rate dependent on rho')
+ylabel('Acceptance rate')
+xlabel('Rho')
+
+
+%% MH plots
 % Plot the random walks
 figure
-hold on
+plot(t_tracker')
 title(['Chains of ' num2str(d) ' breakpoints obtained from hybrid Metropolis-Hastings sampler'])
 xlabel('Step') 
 ylabel('Year') 
-for i = 1:d+2
-    plot(t_tracker(i,:))
-end
-hold off
 ylim([1600 2000])
 
 deriv = zeros(d+1,1);
@@ -127,6 +154,8 @@ xlabel('Year')
 ylabel('Accumulated number of accidents')
 c_map = parula(12);
 start = 0;
+cond_lambda = mean(lambda_tracker,2);
+t = mean(t_tracker,2);
 for i = 1:d+1
     plot([t(i) (t(i))],[0 800], 'Color', c_map((mod(i,2)+1)*3,:))
     y = find(T > t(i) & T < t(i+1));
@@ -139,6 +168,6 @@ for i = 1:d+1
 end
     plot([1980 1980],[0 800])
 
-%% Calculate autocorrelation
+% Calculate autocorrelation
 figure
 acf(t_tracker(6,:)', 2000);
