@@ -13,7 +13,7 @@ t = linspace(1658, 1980, d+2)';
 % Initialize lambda
 cond_lambda = 5;
     
-steps = 5000;
+steps = 10000;
 accidents = zeros(d+1, 1);
 burn_in = 3000;
 jump = 1;
@@ -21,10 +21,10 @@ t_tracker = zeros(d+2, (steps-burn_in)/jump);
 theta_tracker = zeros(d+1, (steps-burn_in)/jump);
 lambda_tracker = zeros(d+1, (steps-burn_in)/jump);
 
-rhos = linspace(0,0.1,100);%0.055;
+rhos = linspace(0,0.1,100);
 nrhos = length(rhos);
 
-psis = 25;%linspace(0,50,50);
+psis = 80;%linspace(0,100,100);
 npsis = length(psis);
 
 acceptance_rate = zeros(nrhos,npsis);
@@ -84,22 +84,22 @@ acceptance_rate = acceptance_rate./steps;
 close all
 
 figure
-plot(psis, mean(theta_on_psi,2))
-title('Mean theta dependent on Psi')
-ylabel('Mean theta')
+plot(psis, theta_on_psi)
+title('Theta parameters dependent on Psi')
+ylabel('Theta values')
 xlabel('Psi')
 
 figure
 plot(psis, lambda_on_psi)
 title('Lambda parameters dependent on Psi')
-ylabel('Lambda')
+ylabel('Lambda values')
 xlabel('Psi')
 
 
 figure
 plot(psis, meant_on_psi)
-title('Mean t parameters dependent on Psi')
-ylabel('t')
+title('Breakpoints dependent on Psi')
+ylabel('Year')
 xlabel('Psi')
 
 
@@ -112,22 +112,22 @@ xlabel('Psi')
 %% Rho plots
 close all
 figure
-plot(rhos, mean(theta_on_rho,2))
-title('Mean theta dependent on rho')
-ylabel('Mean theta')
+plot(rhos, theta_on_rho)
+title('Theta parameters dependent on rho')
+ylabel('Theta values')
 xlabel('rho')
 
 figure
 plot(rhos, lambda_on_rho)
 title('Lambda parameters dependent on rho')
-ylabel('Lambda')
+ylabel('Lambda values')
 xlabel('rho')
 
 
 figure
 plot(rhos, meant_on_rho)
-title('Mean t parameters dependent on rho')
-ylabel('t')
+title('Breakpoints dependent on rho')
+ylabel('Year')
 xlabel('rho')
 
 figure
@@ -138,6 +138,7 @@ xlabel('Rho')
 
 
 %% MH plots
+
 % Plot the random walks
 figure
 plot(t_tracker')
