@@ -5,27 +5,30 @@ addpath('Data')
 load coal_mine_disasters.mat
 
 % Number of breakpoints (not including start and end)
-d = 5;
+d = 1;
 % Initial breakpoints (together with start- and endpoint)
 t = linspace(1658, 1980, d+2)';
 % Initialize lambda
 cond_lambda = 14;
-steps = 2e4;
+steps = 2e5;
 
 accidents = zeros(d+1, 1);
 burn_in = 3000;
-jump = 100;
+jump = 250;
 t_tracker = zeros(d+2, (steps-burn_in)/jump);
 theta_tracker = zeros(d+1, (steps-burn_in)/jump);
 lambda_tracker = zeros(d+1, (steps-burn_in)/jump);
 
-rhos = 1;%0.055;%linspace(0,0.1,100);
+rhos = 0.055;%0.055;%linspace(0,0.1,100);
+% Only != 1 when testing a range of Rho
 nrhos = length(rhos);
 
 % Hyperparameter psi, chosen by us
 psis = 2.33;%linspace(0,10,50);
+% Only != 1 when testing a range of Psi
 npsis = length(psis);
 
+% Where we store the results
 acceptance_rate = zeros(nrhos,npsis);
 theta_on_psi = zeros(npsis, d + 1);
 lambda_on_psi = zeros(npsis, d + 1);
@@ -35,6 +38,7 @@ theta_on_rho = zeros(nrhos, d + 1);
 lambda_on_rho = zeros(nrhos, d + 1);
 meant_on_rho = zeros(nrhos, d + 2);
 
+t_track_on_rho = zeros(nrhos, d + 2, (steps-burn_in)/jump);
 
 for psi_index = 1:npsis
     psi = psis(psi_index);
@@ -54,7 +58,7 @@ for psi_index = 1:npsis
             cond_lambda = gamrnd((accidents+2), 1./((endpoints-startpoints)+cond_theta));
             % Calculate (t|theta, lambda, T) with a Metropolis-Hastings sampler  
             [t, accepted] = MCMC_MH(rho ,cond_lambda, t, T);
-
+            % Calculate new acceptance rate
             acceptance_rate(rho_index,psi_index) = acceptance_rate(rho_index,psi_index) + accepted;
             % Save the current state of the random walk every 50 steps to get 
             % relatively independent samples
@@ -64,16 +68,20 @@ for psi_index = 1:npsis
                 lambda_tracker(:,(step-burn_in)/jump) = cond_lambda;
             end
             
+            % Plot progress bar
             if(mod(step,floor(steps/100)) == 0 )
                q = step/steps;
                clc
                disp([num2str(rho_index + (psi_index - 1)*nrhos) '/' num2str(nrhos*npsis) ' ' num2str(100*q) '% |' char(ones(1,floor(50*q))*'=') char(ones(1, ceil(50 - 50*q))*' ') '|'])       
             end
         end
+        % Save the results for later
         theta_on_rho(rho_index,:) = mean(theta_tracker,2);
         lambda_on_rho(rho_index,:) = mean(lambda_tracker,2);
         meant_on_rho(rho_index,:) = mean(t_tracker,2);
+        t_track_on_rho(rho_index,:,:) = t_tracker;
     end
+    % Save the results for later
     theta_on_psi(psi_index,:) = mean(theta_tracker,2);
     lambda_on_psi(psi_index,:) = mean(lambda_tracker,2);
     meant_on_psi(psi_index,:) = mean(t_tracker,2);
@@ -121,7 +129,6 @@ title('Lambda parameters dependent on rho')
 ylabel('Lambda values')
 xlabel('rho')
 
-
 figure
 plot(rhos, meant_on_rho)
 title('Breakpoints dependent on rho')
@@ -135,23 +142,22 @@ ylabel('Acceptance rate')
 xlabel('Rho')
 
 
-%% MH plots
-
+%% Metropolis-Hastings plots
 % Plot the random walks
 figure
 plot(t_tracker')
-title(['Chains of ' num2str(d) ' breakpoints obtained from hybrid Metropolis-Hastings sampler'])
-xlabel('Step') 
-ylabel('Year') 
+title(['Chains of ' num2str(d) ' breakpoints obtained from hybrid Metropolis-Hastings sampler'], 'FontSize', 15)
+xlabel('Step', 'FontSize', 15) 
+ylabel('Year', 'FontSize', 15) 
 ylim([1600 2000])
 
 deriv = zeros(d+1,1);
 figure
 plot(T,cumsum(T > 0), 'r')
 hold on
-title('Spline interpolation of lines with corresponding lambda as gradients')
-xlabel('Year') 
-ylabel('Accumulated number of accidents')
+title('Line interpolation of lines with corresponding lambda as gradients', 'FontSize', 15)
+xlabel('Year', 'FontSize', 15) 
+ylabel('Accumulated number of accidents', 'FontSize', 15)
 c_map = parula(12);
 start = 0;
 cond_lambda = mean(lambda_tracker,2);
@@ -167,7 +173,22 @@ for i = 1:d+1
     plot(linspace(t(i), t(i+1)), line, 'Color', c_map((mod(i,2)+1)*3,:))
 end
     plot([1980 1980],[0 800])
-
+%% ACF plots 
 % Calculate autocorrelation
+real_steps = (steps-burn_in)/jump;
+
+inds = [1 2 50 100];
+acfs = zeros(length(inds), real_steps);
+
+for i = 1:length(inds)
+    ind = inds(i);
+    acf = reshape(xcov(t_track_on_rho(ind, 6, :)), [2*real_steps - 1 1 1]);
+    acfs(i,:) = acf(real_steps:end)/acf(real_steps);
+end
+
 figure
-acf(t_tracker(6,:)', 2000);
+plot(acfs(:,1:1000)')
+legend('rho = 0','rho = 0.001','rho = 0.05','rho = 0.1')
+title('ACFs on rho for t_6')
+ylabel('Autocorrelation')
+xlabel('Step')
